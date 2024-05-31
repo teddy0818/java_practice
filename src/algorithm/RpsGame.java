@@ -13,9 +13,9 @@ public class RpsGame {
 		while(true) {
 			
 			if(cnt >= 5) {
-				System.out.print("게임을 계속 진행하시겠습니까 ? (Y/N) : ");
+				System.out.print("게임을 계속 진행하시겠습니까 ? (y/n) : ");
 				String answer = scan.next();
-				if(answer.equals("N")) {
+				if(answer.equals("n")) {
 					System.out.println("---------- 게임종료 ----------");
 					break;
 				}
