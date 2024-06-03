@@ -8,10 +8,18 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class main {
+public class Main {
+	
+	public static void showMenu() {
+		System.out.println();
+		System.out.println("< 메뉴 >");
+		System.out.println("(1) 숫자야구 게임 시작");
+		System.out.println("(2) 랭킹 확인");
+		System.out.println("(3) 프로그램 종료");
+		System.out.print("메뉴를 선택해주세요 (1~3)  :  ");
+	}
 	
 	public static void gameStart() {
-		System.out.println("------------- 숫자야구 게임 시작 -------------");
 		
 		// 초기 값 (전역 변수)
 		Scanner scan = new Scanner(System.in);
@@ -19,6 +27,11 @@ public class main {
 		final int len = 3;
 		double score = 100;
 		String nick = "";
+		
+		// 닉네임 입력
+		System.out.println();
+		System.out.print("닉네임 입력 : ");
+		nick = scan.next();
 		
 		// 정답 생성
 		int[] answer = new int[len];
@@ -37,12 +50,8 @@ public class main {
 			}
 			answer[i] = random;
 		}
-		System.out.println("정답 : " + Arrays.toString(answer));
-		
-		// 닉네임 입력
-		System.out.print("닉네임 입력 : ");
-		nick = scan.next();
-		
+		// 테스트용 
+//		System.out.println("정답 : " + Arrays.toString(answer));
 		
 		// 본 게임 실행
         long startTime = System.currentTimeMillis();
@@ -76,6 +85,7 @@ public class main {
 			
 			// 정답
 			if(s == 3) {
+				System.out.println("정답 : " + Arrays.toString(answer));
 				System.out.println("정답을 맞추셨습니다 !!");
 
 				long endTime = System.currentTimeMillis();
@@ -93,13 +103,14 @@ public class main {
 			
 			// 게임 오버
 			if(s != 3 && cnt == 9) {
+				System.out.println("정답 : " + Arrays.toString(answer));
 				System.out.println("Game Over !! 9회전 만에 못푸셨습니다 !!");
+				
 				break;
 			}
 			
 		}
-		
-		System.out.println("------------- 숫자야구 게임 끝 -------------");
+	
 		
 	}
 
@@ -109,36 +120,29 @@ public class main {
 	        String password = "111111";
 
 	        try {
-	            // MySQL JDBC 드라이버 로드
 	            Class.forName("com.mysql.cj.jdbc.Driver");
 
-	            // 데이터베이스 연결
 	            Connection conn = DriverManager.getConnection(jdbcUrl, username, password);
 
-	            // 쿼리 실행
 	            String sql = "SELECT * FROM bs_rank ORDER BY score DESC";
 	            Statement st = conn.createStatement();
 	            ResultSet rs = st.executeQuery(sql);
 
-	            // 결과 처리
-	            System.out.println("------------- 랭킹 확인 시작 -------------");
+	            System.out.println();
+	            System.out.println("< 랭킹 >");
 	            int rankNum = 0;
 	            while (rs.next()) {
 	            	rankNum++;
 	            	String nick = rs.getString("bs_nick");
-	            	int score = rs.getInt("score");
+	            	double score = rs.getDouble("score");
 	            	
-	            	System.out.printf("%d위 %s %d점 \n", rankNum, nick, score);
-//	            	System.out.println("bs_id: " + rs.getString("bs_id"));
-//	                System.out.println("bs_nick: " + rs.getString("bs_nick"));
-//	                System.out.println();
+	            	System.out.printf("%d위 %s %.1f점 \n", rankNum, nick, score);
 	            }
 
-	            // 리소스 해제
 	            rs.close();
 	            st.close();
 	            conn.close();
-	            System.out.println("------------- 랭킹 확인 종료 -------------");
+	    		
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -150,26 +154,15 @@ public class main {
 	    String password = "111111";
 
 	    try {
-	        // MySQL JDBC 드라이버 로드
 	        Class.forName("com.mysql.cj.jdbc.Driver");
 
-	        // 데이터베이스 연결
 	        Connection conn = DriverManager.getConnection(jdbcUrl, username, password);
 
-	        // 쿼리 실행
 	        String sql = "INSERT INTO bs_rank (bs_nick, score) VALUES (?, ?)";
 	        PreparedStatement pstmt = conn.prepareStatement(sql);
 	        pstmt.setString(1, nick);
 	        pstmt.setDouble(2, score);
-	        int rowsAffected = pstmt.executeUpdate();
 
-	        if (rowsAffected > 0) {
-//	            System.out.println("삽입 성공: " + nick + " " + score + "점");
-	        } else {
-//	            System.out.println("삽입 실패");
-	        }
-
-	        // 리소스 해제
 	        pstmt.close();
 	        conn.close();
 	    } catch (Exception e) {
@@ -180,21 +173,21 @@ public class main {
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
 		System.out.println("------------- 프로그램 시작 -------------");
-		System.out.println("(1) 숫자야구 게임 시작");
-		System.out.println("(2) 랭킹 확인");
-		System.out.println("(3) 프로그램 종료");
-		System.out.print("숫자를 입력해주세요 (1~3)  :  ");
+		showMenu();
 		
-		int input = scan.nextInt();
-		switch(input) {
-			case 1 :
+		while(true) {
+			int input = scan.nextInt();
+			if (input == 1) {
 				gameStart();
-				break;
-			case 2 : 
+				showMenu();
+			} else if (input == 2) {
 				checkRank();
+				showMenu();
+			}
+			if(input == 3) {
 				break;
-			case 3 : 
-				break;
+			}
+		
 		}
 		
 		System.out.println("------------- 프로그램 종료 -------------");
